@@ -1,25 +1,41 @@
-import logo from './logo.svg';
+import React, {useState} from 'react';
+import { useDispatch } from "react-redux";
+import { userActions } from "./store.js";
+import Login from './LOGIN/Login.js';
+import Chat from './CHAT/Chat.js';
 import './App.css';
 
 function App() {
-  return (
+
+  const drone = new window.Scaledrone('rRKKNSRHxhIHIEfT');
+  const dispatch = useDispatch();
+  const [userActive, setUserActive] = useState(false);
+
+  const onSubmit=() =>{
+    
+    setUserActive(true);
+    console.log(userActive);
+    dispatch(userActions.isActive(1));
+  }
+  drone.on('close', event => {
+    console.log('disconnected');
+  });
+  const handleLogout =() =>{
+    setUserActive(false);
+    drone.close();
+  }
+
+    if(!userActive){ 
+      return(
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     <Login onSubmit={onSubmit}/>
+    </div>)}
+      else{ return(
+    <div className="App">
+     <Chat onLogOut={handleLogout} drone={drone}/>
     </div>
-  );
+  )
+}
 }
 
 export default App;
